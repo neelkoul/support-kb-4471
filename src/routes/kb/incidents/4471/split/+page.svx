@@ -1,0 +1,54 @@
+---
+layout: runbook
+title: '#4471 · three problems, not one'
+owner: support desk
+status: active
+reviewed: 2026-11-04
+signature: v1.eyJzdWIiOiI0ODUiLCJhdWQiOiJjaGFsbGVuZ2U6d2hhdC1pdC1zaG93cyIsImlhdCI6MTc5Mzg0NjA1NiwiZXhwIjoxNzkzOTMyNDU2fQ.my1meCIdQTDzvRXbdliH1ZGDrp7almG-OKY8DyGo_mA
+---
+
+<script>
+  import ProblemTable from '#lib/kb/ProblemTable.svelte';
+  import Callout from '#lib/kb/Callout.svelte';
+  import RenderStamp from '#lib/kb/RenderStamp.svelte';
+</script>
+
+[#4471](/kb/incidents/4471) is marked **known: one issue, one fix queued**. It is not one issue.
+The desk merged every report whose subject sounded like a date problem
+([decision 0001](/kb/decisions/0001-dedupe-by-subject)), so three bugs ended up behind one ticket.
+Fixing the parser closes only one of them.
+
+<Callout kind="warn">
+Shipping the queued parser fix and closing #4471 leaves two live bugs with no ticket.
+</Callout>
+
+## What #4471 holds
+
+<ProblemTable ticket={4471} repo="neelkoul/support-kb-4471" />
+
+Each row is one ticket. The counts are computed from the export at render time
+(`src/lib/kb/problems.ts`). The export repeats some reports, so they are counted once by id.
+
+## How they differ
+
+- **Parser.** The shared parser reads every date month first. Our tenants write the day first, so
+  7 April comes out as 4 July. This is the problem #4471 describes.
+- **Form hint.** booking-v3 prints `MM/DD/YYYY` under its date field. People type what it says,
+  and the form reads the date day first. The date is already flipped before it reaches the parser.
+  Only reports that came in through a booking-v3 form belong here.
+- **One day off.** In these reports the day and month are not swapped. The booking moves by a day, or differs between
+  people in different time zones. The desk already listed these in `desk-notes.json` as a one-day move,
+  but the #4471 table counts them under the parser.
+
+## How to place a report
+
+Do not trust `intakeTag`. Intake guesses it from the reporter's browser. The cause depends on the
+tenant's locale, its booking form and the channel (`causeOf` in `src/lib/kb/causes.ts`). Then read the body:
+a swap of day and month is the parser or the form hint, and a one-day move is its own problem.
+
+## For the desk
+
+- Keep #4471 for the parser problem only. Move the other reports to their own tickets.
+- A shared subject line is not the same cause. Decision 0001 needs a successor record.
+
+<RenderStamp {signature} />
