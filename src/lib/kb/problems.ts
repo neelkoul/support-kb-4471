@@ -1,6 +1,7 @@
-// The problems #4471 really holds. causes.ts places a report by tenant and channel; the desk's own
-// notes (desk-notes.json, oneDayMove) mark reports whose body describes a one-day move, not a
-// day-month swap. Those are their own problem, so they are counted there and nowhere else.
+// The problems #4471 really holds, counted the desk's way. causes.ts places every report by tenant and
+// channel (parser or hint), as CauseTable does. The desk's own notes (desk-notes.json, oneDayMove)
+// mark reports whose body describes a one-day move, not a day-month swap: their own problem. Like
+// CauseTable's footnote, they stay counted where they are filed and are counted again as one-day.
 import { causeOf, uniqueById, type Report, type Tenant } from '#lib/kb/causes';
 
 export type Problem = 'parser' | 'hint' | 'one-day' | 'unplaced';
@@ -11,8 +12,7 @@ export const PROBLEMS: Record<Exclude<Problem, 'unplaced'>, { title: string; iss
   'one-day': { title: 'Bookings land one day off across time zones', issue: 3 },
 };
 
-export function problemOf(r: Report, t: Tenant | undefined, oneDayMove: readonly string[]): Problem {
-  if (oneDayMove.includes(r.id)) return 'one-day';
+export function problemOf(r: Report, t: Tenant | undefined): Problem {
   return causeOf(r, t) ?? 'unplaced';
 }
 
@@ -27,9 +27,11 @@ export function splitTicket(
   const unique = uniqueById(all).filter((r) => r.mergedInto === ticket);
   const by = new Map<Problem, Report[]>();
   for (const r of unique) {
-    const p = problemOf(r, tenantOf(r), oneDayMove);
+    const p = problemOf(r, tenantOf(r));
     by.set(p, [...(by.get(p) ?? []), r]);
   }
+  const moved = unique.filter((r) => oneDayMove.includes(r.id));
+  if (moved.length) by.set('one-day', moved);
   const groups = [...by.entries()]
     .map(([problem, rs]) => {
       const days = rs.map((r) => r.receivedAt.slice(0, 10)).sort();

@@ -27,7 +27,10 @@ Shipping the queued parser fix and closing #4471 leaves two live bugs with no ti
 <ProblemTable ticket={4471} repo="neelkoul/support-kb-4471" />
 
 Each row is one ticket. The counts are computed from the export at render time
-(`src/lib/kb/problems.ts`). The export repeats some reports, so they are counted once by id.
+(`src/lib/kb/problems.ts`), the desk's way: every report is counted where `causeOf` files it, as in the
+[#4471 table](/kb/incidents/4471). The export repeats some reports, so they are counted once by id.
+The one-day reports are filed under the parser and listed again on their own ticket, so the rows add
+up to more than the unique reports.
 
 ## How they differ
 
