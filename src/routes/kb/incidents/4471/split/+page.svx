@@ -13,13 +13,14 @@ signature: v1.eyJzdWIiOiI0ODUiLCJhdWQiOiJjaGFsbGVuZ2U6d2hhdC1pdC1zaG93cyIsImlhdC
   import RenderStamp from '#lib/kb/RenderStamp.svelte';
 </script>
 
-[#4471](/kb/incidents/4471) is marked **known: one issue, one fix queued**. It is not one issue.
+[#4471](/kb/incidents/4471) was marked **known: one issue, one fix queued**. It was not one issue.
 The desk merged every report whose subject sounded like a date problem
 ([decision 0001](/kb/decisions/0001-dedupe-by-subject)), so three bugs ended up behind one ticket.
 Fixing the parser closes only one of them.
 
 <Callout kind="warn">
-Shipping the queued parser fix and closing #4471 leaves two live bugs with no ticket.
+#4471 closed on 5 October. The parser is fixed and booking-v3 is retired. The one-day problem
+has no fix yet: its ticket stays open.
 </Callout>
 
 ## What #4471 holds
@@ -31,6 +32,12 @@ Each row is one ticket. The counts are computed from the export at render time
 [#4471 table](/kb/incidents/4471). The export repeats some reports, so they are counted once by id.
 The one-day reports are filed under the parser and listed again on their own ticket, so the rows add
 up to more than the unique reports.
+
+## Where each one stands
+
+- **Parser:** fixed (`fix(dates): parse dd/mm for eu locales`). Ticket closed.
+- **Form hint:** won't fix. The booking-v3 form is retired, so its hint can no longer flip a date. Ticket closed.
+- **One day off:** open. Neither change touches time zones or day boundaries.
 
 ## How they differ
 
@@ -51,7 +58,7 @@ a swap of day and month is the parser or the form hint, and a one-day move is it
 
 ## For the desk
 
-- Keep #4471 for the parser problem only. Move the other reports to their own tickets.
+- Do not merge new wrong-day reports into a closed #4471. Place them first: a one-day move belongs on the open ticket.
 - A shared subject line is not the same cause. Decision 0001 needs a successor record.
 
 <RenderStamp {signature} />
